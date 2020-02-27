@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  cs4354-db:
+    image: mysql:latest
+    container_name: cs4354-db
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "3306:3306"
+    volumes:
+      - cs4354-db-vol:/var/lib/mysql
+
+  flyway:
+    image: flyway/flyway:latest
+    container_name: cs4354-flyway
+    command: -url=jdbc:mysql://cs4354-db -schemas=cs4354 -user=root migrate
+    volumes:
+      - ./sql:/flyway/sql
+    depends_on:
+      - cs4354-db
+
+volumes:
+  cs4354-db-vol:
+
+networks:
+  default:
+    external:
+      name: cs4354-net
